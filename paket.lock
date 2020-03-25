@@ -1,0 +1,6 @@
+STORAGE: PACKAGES
+NUGET
+  remote: https://api.nuget.org/v3/index.json
+    FSharp.Core (4.7.1) - restriction: >= netstandard2.1
+    SharpVG (0.0.9)
+      FSharp.Core (>= 4.7) - restriction: >= netstandard2.1
