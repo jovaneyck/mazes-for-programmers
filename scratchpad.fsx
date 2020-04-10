@@ -3,6 +3,9 @@
 open Maze
 open Random
 
+module Rand = 
+    let Edge : Rand<Edge> = Rand.Bool |> State.map (function true -> Wall | _ -> NoWall)
+
 let x =
     random {
         let! addend = Rand.IntRange 1 3 
@@ -12,11 +15,42 @@ let x =
     } 
     |> Rand.runSeed 1337
 
-let m = 
-   Maze.initMaze 10 10
-   |> Maze.update (4,4) East NoWall
-   |> Maze.update (4,4) South NoWall
+let locationsIn (m : Maze) = 
+    m |> Map.toSeq |> Seq.map fst
 
-m
+let boundaries (m : Maze) = 
+    let locs = locationsIn m
+    (locs |> Seq.map fst |> Seq.max,locs |> Seq.map snd |> Seq.max)
+
+let binaryTreeCell boundary location : Rand<Cell> = 
+    random {
+        let (bx,by) = boundary
+        let (x,y) = location
+        
+        if x = bx && y = by then 
+            return Map.ofList [ (East, Wall); (South, Wall)] 
+        elif x = bx then 
+            return Map.ofList [ (East, Wall); (South, NoWall)] 
+        elif y = by then
+            return Map.ofList [ (East, NoWall); (South, Wall)] 
+        else
+            let! openEast = Rand.Bool
+            let east = if openEast then Wall else NoWall
+            let south = if openEast then NoWall else Wall
+            let cell : Cell = Map.ofList [ (East, east); (South, south)]
+            return cell
+    }
+
+let binaryTree m : Rand<Maze> = 
+    random {
+        let locations = locationsIn m
+        let boundaries = boundaries m
+        let! cells = locations |> Seq.map (fun loc -> binaryTreeCell boundaries loc |> State.map (fun c -> loc,c)) |> Seq.toList |> State.sequenceList
+        return Map.ofList cells
+    }
+
+Maze.initMaze 100 100
+|> binaryTree 
+|> Rand.run
 |> Draw.toLines
 |> Draw.draw

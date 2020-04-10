@@ -37,4 +37,9 @@ let toLines (maze : Maze.Maze) =
 let draw shapes =
     shapes
     |> Svg.toString
-    |> fun s -> System.IO.File.WriteAllText( __SOURCE_DIRECTORY__ + "\out\maze.html", (@"<html><head><title>My magical maze!</title><meta http-equiv=""refresh"" content=""1"" ></head><body>"+s+"</body></html>"))
+    |> fun s -> System.IO.File.WriteAllText( __SOURCE_DIRECTORY__ + "\out\maze.html", (@"<html><head><title>My magical maze!</title><style>svg {width: -webkit-fill-available;height: -webkit-fill-available;}</style></head><body>"+s+"</body></html>"))
+
+let drawRefresh shapes =
+    shapes
+    |> Svg.toString
+    |> fun s -> System.IO.File.WriteAllText( __SOURCE_DIRECTORY__ + "\out\maze.html", (@"<html><head><title>My magical maze!</title><meta http-equiv=""refresh"" content=""1"" ><style>svg {width: -webkit-fill-available;height: -webkit-fill-available;}</style></head><body>"+s+"</body></html>"))

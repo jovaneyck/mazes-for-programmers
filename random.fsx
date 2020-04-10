@@ -51,6 +51,8 @@ module Rand =
 
     let runSeed (seed:int) (rand:Rand<'a>) : 'a = State.eval rand (new System.Random(seed))
 
+    let run (rand:Rand<'a>) : 'a = State.eval rand (new System.Random())
+
     let unit a : Rand<'a> = State.unit a
 
     let Int : Rand<int> = State(fun (rng:Random) -> (rng.Next(),rng))
