@@ -3,25 +3,6 @@
 open Maze
 open Random
 
-module Rand = 
-    let Edge : Rand<Edge> = Rand.Bool |> State.map (function true -> Wall | _ -> NoWall)
-
-let x =
-    random {
-        let! addend = Rand.IntRange 1 3 
-        let! xs = Rand.listOf 10 (Rand.IntRange 2 10)
-        let adds = xs |> List.map (fun x -> x + addend)
-        return adds
-    } 
-    |> Rand.runSeed 1337
-
-let locationsIn (m : Maze) = 
-    m |> Map.toSeq |> Seq.map fst
-
-let boundaries (m : Maze) = 
-    let locs = locationsIn m
-    (locs |> Seq.map fst |> Seq.max,locs |> Seq.map snd |> Seq.max)
-
 let binaryTreeCell boundary location : Rand<Cell> =   
     let (bx,by) = boundary
     let (x,y) = location
@@ -42,8 +23,8 @@ let binaryTreeCell boundary location : Rand<Cell> =
         }
 
 let binaryTree m : Rand<Maze> = 
-    let locations = locationsIn m
-    let boundaries = boundaries m
+    let locations = Maze.locationsIn m
+    let boundaries = Maze.boundaries m
 
     random {    
         let! cells = 
@@ -51,7 +32,7 @@ let binaryTree m : Rand<Maze> =
             |> Seq.map (fun loc -> binaryTreeCell boundaries loc |> State.map (fun c -> loc,c)) 
             |> Seq.toList 
             |> State.sequenceList
-        return Map.ofList cells
+        return Maze.mkMaze cells
     }
 
 Maze.initMaze 100 100
