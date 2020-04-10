@@ -4,7 +4,8 @@ type Edge = Wall | NoWall
 type Cell = Map<Direction, Edge>
 type Maze = Map<int*int,Cell>
     
-let private initCell = [(East, Wall); (South, Wall)] |> Map.ofList
+let mkCell info = info |> Map.ofList
+let private initCell = mkCell [(East, Wall); (South, Wall)]
 let initMaze nbRows nbCols : Maze =
     [ for r in [0..(nbRows - 1)] do
         for c in [0..(nbCols - 1)] -> (r,c)]

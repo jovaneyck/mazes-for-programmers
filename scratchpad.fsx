@@ -22,30 +22,35 @@ let boundaries (m : Maze) =
     let locs = locationsIn m
     (locs |> Seq.map fst |> Seq.max,locs |> Seq.map snd |> Seq.max)
 
-let binaryTreeCell boundary location : Rand<Cell> = 
-    random {
-        let (bx,by) = boundary
-        let (x,y) = location
+let binaryTreeCell boundary location : Rand<Cell> =   
+    let (bx,by) = boundary
+    let (x,y) = location
         
-        if x = bx && y = by then 
-            return Map.ofList [ (East, Wall); (South, Wall)] 
-        elif x = bx then 
-            return Map.ofList [ (East, Wall); (South, NoWall)] 
-        elif y = by then
-            return Map.ofList [ (East, NoWall); (South, Wall)] 
-        else
+    if x = bx && y = by then 
+        Rand.unit <| Map.ofList [ (East, Wall); (South, Wall)] 
+    elif x = bx then 
+        Rand.unit <| Map.ofList [ (East, Wall); (South, NoWall)] 
+    elif y = by then
+        Rand.unit <| Map.ofList [ (East, NoWall); (South, Wall)] 
+    else
+        random {
             let! openEast = Rand.Bool
             let east = if openEast then Wall else NoWall
             let south = if openEast then NoWall else Wall
-            let cell : Cell = Map.ofList [ (East, east); (South, south)]
+            let cell : Cell = mkCell [(East, east); (South, south)]
             return cell
-    }
+        }
 
 let binaryTree m : Rand<Maze> = 
-    random {
-        let locations = locationsIn m
-        let boundaries = boundaries m
-        let! cells = locations |> Seq.map (fun loc -> binaryTreeCell boundaries loc |> State.map (fun c -> loc,c)) |> Seq.toList |> State.sequenceList
+    let locations = locationsIn m
+    let boundaries = boundaries m
+
+    random {    
+        let! cells = 
+            locations 
+            |> Seq.map (fun loc -> binaryTreeCell boundaries loc |> State.map (fun c -> loc,c)) 
+            |> Seq.toList 
+            |> State.sequenceList
         return Map.ofList cells
     }
 
