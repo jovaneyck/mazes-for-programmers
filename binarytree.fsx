@@ -7,20 +7,20 @@ let binaryTreeCell boundary location : Rand<Cell> =
     let (bx,by) = boundary
     let (x,y) = location
         
-    if x = bx && y = by then 
-        Rand.unit <| Map.ofList [ (East, Wall); (South, Wall)] 
-    elif x = bx then 
-        Rand.unit <| Map.ofList [ (East, Wall); (South, NoWall)] 
-    elif y = by then
-        Rand.unit <| Map.ofList [ (East, NoWall); (South, Wall)] 
-    else
-        random {
+    random {
+        if x = bx && y = by then 
+            return Map.ofList [ (East, Wall); (South, Wall)] 
+        elif x = bx then 
+            return Map.ofList [ (East, Wall); (South, NoWall)] 
+        elif y = by then
+            return Map.ofList [ (East, NoWall); (South, Wall)] 
+        else
             let! openEast = Rand.Bool
             let east = if openEast then Wall else NoWall
             let south = if openEast then NoWall else Wall
             let cell : Cell = mkCell [(East, east); (South, south)]
             return cell
-        }
+    }
 
 let binaryTree m : Rand<Maze> = 
     let locations = Maze.locationsIn m
@@ -30,8 +30,7 @@ let binaryTree m : Rand<Maze> =
         let! cells = 
             locations 
             |> Seq.map (fun loc -> binaryTreeCell boundaries loc |> State.map (fun c -> loc,c)) 
-            |> Seq.toList 
-            |> State.sequenceList
+            |> (Seq.toList >> State.sequenceList)
         return Maze.mkMaze cells
     }
 
@@ -39,4 +38,4 @@ Maze.initMaze 100 100
 |> binaryTree 
 |> Rand.run
 |> Draw.toLines
-|> Draw.draw
+|> Draw.draw "binarytree"

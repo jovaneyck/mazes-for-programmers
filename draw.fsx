@@ -34,10 +34,10 @@ let toLines (maze : Maze.Maze) =
     |> Seq.collect (fun kvp -> edges (kvp.Key, kvp.Value)) |> List.ofSeq |> Seq.map (fun (x,y) -> line x y) |> SharpVG.Svg.ofSeq
     
 
-let draw shapes =
+let draw filename shapes =
     shapes
     |> Svg.toString
-    |> fun s -> System.IO.File.WriteAllText( __SOURCE_DIRECTORY__ + "\out\maze.html", (@"<html><head><title>My magical maze!</title><style>svg {width: -webkit-fill-available;height: -webkit-fill-available;}</style></head><body>"+s+"</body></html>"))
+    |> fun s -> System.IO.File.WriteAllText( __SOURCE_DIRECTORY__ + @"\out\"+filename+".html", (@"<html><head><title>My magical maze!</title><style>svg {width: -webkit-fill-available;height: -webkit-fill-available;}</style></head><body>"+s+"</body></html>"))
 
 let drawRefresh shapes =
     shapes
