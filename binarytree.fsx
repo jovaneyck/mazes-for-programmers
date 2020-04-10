@@ -9,11 +9,11 @@ let binaryTreeCell boundary location : Rand<Cell> =
         
     random {
         if x = bx && y = by then 
-            return Map.ofList [ (East, Wall); (South, Wall)] 
+            return mkCell [ (East, Wall); (South, Wall)] 
         elif x = bx then 
-            return Map.ofList [ (East, Wall); (South, NoWall)] 
+            return mkCell [ (East, Wall); (South, NoWall)] 
         elif y = by then
-            return Map.ofList [ (East, NoWall); (South, Wall)] 
+            return mkCell [ (East, NoWall); (South, Wall)] 
         else
             let! openEast = Rand.Bool
             let east = if openEast then Wall else NoWall
