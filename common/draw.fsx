@@ -1,5 +1,5 @@
 //Stuff to render mazes using an svg lib & some raw html dumps :)
-#r @".\packages\SharpVG\lib\netstandard2.1\SharpVG.dll"
+#r @".\..\packages\SharpVG\lib\netstandard2.1\SharpVG.dll"
 #load "maze.fsx"
 open SharpVG
 
@@ -34,12 +34,14 @@ let toLines (maze : Maze.Maze) =
     |> Seq.collect (fun kvp -> edges (kvp.Key, kvp.Value)) |> List.ofSeq |> Seq.map (fun (x,y) -> line x y) |> SharpVG.Svg.ofSeq
     
 
-let draw filename shapes =
+let draw filename shapes =   
     shapes
     |> Svg.toString
-    |> fun s -> System.IO.File.WriteAllText( __SOURCE_DIRECTORY__ + @"\out\"+filename+".html", (@"<html><head><title>My magical maze!</title><style>svg {width: -webkit-fill-available;height: -webkit-fill-available;}</style></head><body>"+s+"</body></html>"))
+    |> fun s -> System.IO.File.WriteAllText( System.IO.DirectoryInfo(__SOURCE_DIRECTORY__).Parent.FullName + @"\out\"+filename+".html", (@"<html><head><title>My magical maze!</title><style>svg {width: -webkit-fill-available;height: -webkit-fill-available;}</style></head><body>"+s+"</body></html>"))
 
 let drawRefresh shapes =
+    let fileName = System.IO.DirectoryInfo(__SOURCE_DIRECTORY__).Parent.FullName + @"\out\refresh.html"
+    printfn "%A" fileName
     shapes
     |> Svg.toString
-    |> fun s -> System.IO.File.WriteAllText( __SOURCE_DIRECTORY__ + "\out\maze.html", (@"<html><head><title>My magical maze!</title><meta http-equiv=""refresh"" content=""1"" ><style>svg {width: -webkit-fill-available;height: -webkit-fill-available;}</style></head><body>"+s+"</body></html>"))
+    |> fun s -> System.IO.File.WriteAllText( fileName, (@"<html><head><title>My magical maze!</title><meta http-equiv=""refresh"" content=""1"" ><style>svg {width: -webkit-fill-available;height: -webkit-fill-available;}</style></head><body>"+s+"</body></html>"))

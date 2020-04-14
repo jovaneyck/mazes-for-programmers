@@ -1,5 +1,5 @@
-#load "draw.fsx"
-#load "random.fsx"
+#load @"..\common\draw.fsx"
+#load @"..\common\random.fsx"
 open Maze
 open Random
 
@@ -39,3 +39,4 @@ Maze.initMaze 100 100
 |> Rand.run
 |> Draw.toLines
 |> Draw.draw "binarytree"
+//|> Draw.drawRefresh
